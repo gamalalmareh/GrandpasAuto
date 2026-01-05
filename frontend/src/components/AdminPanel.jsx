@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
+
 
 function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
   const [activeTab, setActiveTab] = useState("cars");
@@ -725,3 +727,4 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
 }
 
 export default AdminPanel;
+
