@@ -6,8 +6,8 @@ import AdminPanel from "./components/AdminPanel.jsx";
 import GrandpasLogo from "./assets/GrandpasLogo.png";
 
 
-const API_BASE = "http://localhost:5000";
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
 
 function App() {
   const [cars, setCars] = useState([]);
@@ -572,3 +572,4 @@ function App() {
 
 
 export default App;
+
