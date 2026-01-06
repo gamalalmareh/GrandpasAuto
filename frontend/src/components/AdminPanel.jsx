@@ -100,7 +100,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
   };
 
 const handleUploadImage = async (e) => {
-  const file = e.target.files[0]?.;
+  const file = e.target.files?.[0];
   if (!file) return;
 
   const formData = new FormData();
@@ -723,6 +723,7 @@ const handleUploadImage = async (e) => {
 }
 
 export default AdminPanel;
+
 
 
 
