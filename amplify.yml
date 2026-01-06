@@ -10,7 +10,7 @@ frontend:
       commands:
         - npm run build
       env:
-        VITE_API_BASE_URL: 'http://54.90.68.15:5000'
+        VITE_API_BASE_URL: 'http://54.90.68.158:5000'
   artifacts:
     baseDirectory: frontend/dist
     files:
