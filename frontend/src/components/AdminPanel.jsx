@@ -99,34 +99,31 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
     }
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+const handleUploadImage = async (e) => {
+  const file = e.target.files?.;
+  if (!file) return;
 
-    setUploading(true);
-    const uploadFormData = new FormData();
-    uploadFormData.append("image", file);
+  const formData = new FormData();
+  formData.append("image", file);
 
-    try {
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        body: uploadFormData,
-      });
+  try {
+    const response = await fetch(UPLOAD_ENDPOINT, {
+      method: "POST",
+      body: formData,
+    });
 
-      if (!res.ok) {
-        throw new Error(`Upload failed with status ${res.status}`);
-      }
-
-      const data = await res.json();
-      setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
-      alert("Image uploaded successfully!");
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Image upload failed: " + err.message);
-    } finally {
-      setUploading(false);
+    if (!response.ok) {
+      throw new Error("Upload failed");
     }
-  };
+
+    const data = await response.json();
+    return data.imageUrl;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    alert("Failed to upload image");
+    return null;
+  }
+};
 
   const handleMultipleImagesUpload = async (e) => {
     const files = e.target.files;
@@ -726,5 +723,6 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
 }
 
 export default AdminPanel;
+
 
 
