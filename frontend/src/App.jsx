@@ -5,9 +5,8 @@ import LoginModal from "./components/LoginModal.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
 import GrandpasLogo from "./assets/GrandpasLogo.png";
 
-
+// Get API URL from environment variable (set by Amplify)
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
 
 function App() {
   const [cars, setCars] = useState([]);
@@ -17,14 +16,12 @@ function App() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [leads, setLeads] = useState([]);
 
-
   // search + filters + sort
   const [searchTerm, setSearchTerm] = useState("");
   const [filterYear, setFilterYear] = useState("all");
   const [filterMake, setFilterMake] = useState("all");
   const [filterModel, setFilterModel] = useState("all");
-  const [sortBy, setSortBy] = useState("none"); // none | price-asc | price-desc | year-asc | year-desc
-
+  const [sortBy, setSortBy] = useState("none");
 
   useEffect(() => {
     const loadData = async () => {
@@ -45,7 +42,6 @@ function App() {
     };
     loadData();
   }, []);
-
 
   const handleOpenDetail = (car) => setSelectedCar(car);
   const handleCloseDetail = () => setSelectedCar(null);
@@ -572,4 +568,5 @@ function App() {
 
 
 export default App;
+
 
