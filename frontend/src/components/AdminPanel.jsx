@@ -1,31 +1,45 @@
 import { useState } from "react";
 
 // Get API URL from environment variable (set by Amplify)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
 
 function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
   const [activeTab, setActiveTab] = useState("vehicles");
-  const [editingId, setEditingId] = useState(null);
-  const [newVehicle, setNewVehicle] = useState({
+  const [editingCar, setEditingCar] = useState(null);
+  const [formData, setFormData] = useState({
     year: "",
     make: "",
     model: "",
     price: "",
     mileage: "",
+    transmission: "",
+    fuel: "",
+    color: "",
     city: "Gloucester",
     state: "VA",
     imageUrl: "",
     images: [],
+    description: "",
   });
-
   const [uploading, setUploading] = useState(false);
 
   const handleEditCar = (car) => {
     setEditingCar(car.id);
     setFormData({
-      ...car,
-      images: car.images || [],
+      year: car.year || "",
+      make: car.make || "",
+      model: car.model || "",
+      price: car.price || "",
+      mileage: car.mileage || "",
+      transmission: car.transmission || "",
+      fuel: car.fuel || "",
+      color: car.color || "",
+      city: car.city || "Gloucester",
+      state: car.state || "VA",
+      imageUrl: car.imageUrl || "",
+      images: Array.isArray(car.images) ? car.images : [],
+      description: car.description || "",
     });
   };
 
@@ -40,6 +54,8 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
       transmission: "",
       fuel: "",
       color: "",
+      city: "Gloucester",
+      state: "VA",
       imageUrl: "",
       images: [],
       description: "",
@@ -56,7 +72,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
 
       const dataToSave = {
         ...formData,
-        imageUrl: formData.imageUrl || (formData.images || ""),
+        imageUrl: formData.imageUrl || (formData.images?.[0] || ""),
       };
 
       const res = await fetch(url, {
@@ -69,9 +85,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
       const saved = await res.json();
 
       if (editingCar) {
-        setCars((prev) =>
-          prev.map((c) => (c.id === editingCar ? saved : c))
-        );
+        setCars((prev) => prev.map((c) => (c.id === editingCar ? saved : c)));
       } else {
         setCars((prev) => [...prev, saved]);
       }
@@ -99,31 +113,36 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
     }
   };
 
-const handleUploadImage = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleUploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append("image", file);
+    const fd = new FormData();
+    fd.append("image", file);
 
-  try {
-    const response = await fetch(UPLOAD_ENDPOINT, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      setUploading(true);
+      const response = await fetch(UPLOAD_ENDPOINT, {
+        method: "POST",
+        body: fd,
+      });
 
-    if (!response.ok) {
-      throw new Error("Upload failed");
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      setFormData((prev) => ({
+        ...prev,
+        imageUrl: data.imageUrl || prev.imageUrl,
+      }));
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image");
+    } finally {
+      setUploading(false);
     }
-
-    const data = await response.json();
-    return data.imageUrl;
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    alert("Failed to upload image");
-    return null;
-  }
-};
+  };
 
   const handleMultipleImagesUpload = async (e) => {
     const files = e.target.files;
@@ -148,7 +167,7 @@ const handleUploadImage = async (e) => {
       const data = await res.json();
       setFormData((prev) => ({
         ...prev,
-        images: [...(prev.images || []), ...data.imageUrls],
+        images: [...(prev.images || []), ...(data.imageUrls || [])],
       }));
       alert(`${files.length} image(s) uploaded successfully!`);
     } catch (err) {
@@ -175,9 +194,7 @@ const handleUploadImage = async (e) => {
       });
       if (!res.ok) throw new Error("Update failed");
       const updated = await res.json();
-      setLeads((prev) =>
-        prev.map((l) => (l.id === leadId ? updated : l))
-      );
+      setLeads((prev) => prev.map((l) => (l.id === leadId ? updated : l)));
     } catch (err) {
       console.error("Error updating lead", err);
       alert("Error updating lead status");
@@ -303,24 +320,6 @@ const handleUploadImage = async (e) => {
       marginTop: "1.6rem",
       paddingTop: "1.2rem",
       borderTop: "1px solid var(--border)",
-    },
-    btnSmall: {
-      padding: "0.4rem 0.8rem",
-      fontSize: "0.75rem",
-      borderRadius: "6px",
-      border: "1px solid var(--border)",
-      background: "var(--surface)",
-      color: "var(--text)",
-      cursor: "pointer",
-      transition: "all 0.2s",
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-      fontWeight: "500",
-    },
-    btnSmallDanger: {
-      background: "#fee2e2",
-      color: "#b91c1c",
-      borderColor: "#fecaca",
     },
     adminEmpty: {
       padding: "2rem",
@@ -480,27 +479,42 @@ const handleUploadImage = async (e) => {
                   <div style={styles.formSectionTitle}>Images</div>
 
                   <div style={styles.formGroup}>
-                    <label style={styles.formGroupLabel}>Featured Image (Primary)</label>
+                    <label style={styles.formGroupLabel}>
+                      Featured Image (Primary)
+                    </label>
                     <div style={styles.uploadInputWrapper}>
                       <input
                         type="file"
                         accept="image/*"
                         style={styles.uploadFileInput}
-                        onChange={handleImageUpload}
+                        onChange={handleUploadImage}
                         disabled={uploading}
                       />
                       {uploading && (
                         <span style={styles.uploadStatus}>Uploading...</span>
                       )}
                       {formData.imageUrl && !uploading && (
-                        <span style={{ ...styles.uploadStatus, ...styles.uploadStatusSuccess }}>
+                        <span
+                          style={{
+                            ...styles.uploadStatus,
+                            ...styles.uploadStatusSuccess,
+                          }}
+                        >
                           ✓ Uploaded
                         </span>
                       )}
                     </div>
                     {formData.imageUrl && (
                       <div style={styles.imagePreview}>
-                        <img src={formData.imageUrl} alt="Featured" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img
+                          src={formData.imageUrl}
+                          alt="Featured"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
                         <button
                           type="button"
                           style={styles.btnRemoveImage}
@@ -515,7 +529,9 @@ const handleUploadImage = async (e) => {
                   </div>
 
                   <div style={styles.formGroup}>
-                    <label style={styles.formGroupLabel}>Gallery Images (Multiple)</label>
+                    <label style={styles.formGroupLabel}>
+                      Gallery Images (Multiple)
+                    </label>
                     <div style={styles.uploadInputWrapper}>
                       <input
                         type="file"
@@ -534,7 +550,15 @@ const handleUploadImage = async (e) => {
                       <div style={styles.galleryPreview}>
                         {formData.images.map((img, idx) => (
                           <div key={idx} style={styles.galleryItem}>
-                            <img src={img} alt={`Gallery ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <img
+                              src={img}
+                              alt={`Gallery ${idx + 1}`}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
                             <button
                               type="button"
                               style={styles.btnRemoveImage}
@@ -551,7 +575,7 @@ const handleUploadImage = async (e) => {
                   <div style={styles.formGroup}>
                     <label style={styles.formGroupLabel}>Description</label>
                     <textarea
-                      style={{...styles.formInput, resize: "vertical"}}
+                      style={{ ...styles.formInput, resize: "vertical" }}
                       value={formData.description}
                       onChange={(e) =>
                         setFormData({
@@ -612,7 +636,8 @@ const handleUploadImage = async (e) => {
                             </p>
                             {car.images && car.images.length > 0 && (
                               <p className="car-gallery-badge">
-                                📸 {car.images.length} photo{car.images.length !== 1 ? "s" : ""}
+                                📸 {car.images.length} photo
+                                {car.images.length !== 1 ? "s" : ""}
                               </p>
                             )}
                           </div>
@@ -658,7 +683,11 @@ const handleUploadImage = async (e) => {
                             {lead.firstName} {lead.lastName}
                           </h4>
                           <p className="lead-sub">
-                            {new Date(lead.createdAt).toLocaleDateString()}
+                            {lead.createdAt
+                              ? new Date(
+                                  lead.createdAt
+                                ).toLocaleDateString()
+                              : ""}
                           </p>
                         </div>
                         <div className="lead-status-wrap">
@@ -723,8 +752,3 @@ const handleUploadImage = async (e) => {
 }
 
 export default AdminPanel;
-
-
-
-
-
