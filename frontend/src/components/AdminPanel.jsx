@@ -1,25 +1,24 @@
 import { useState } from "react";
 
+// Get API URL from environment variable (set by Amplify)
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
 
-
 function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
-  const [activeTab, setActiveTab] = useState("cars");
-  const [editingCar, setEditingCar] = useState(null);
-  const [formData, setFormData] = useState({
+  const [activeTab, setActiveTab] = useState("vehicles");
+  const [editingId, setEditingId] = useState(null);
+  const [newVehicle, setNewVehicle] = useState({
     year: "",
     make: "",
     model: "",
     price: "",
     mileage: "",
-    transmission: "",
-    fuel: "",
-    color: "",
+    city: "Gloucester",
+    state: "VA",
     imageUrl: "",
     images: [],
-    description: "",
   });
+
   const [uploading, setUploading] = useState(false);
 
   const handleEditCar = (car) => {
@@ -727,4 +726,5 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
 }
 
 export default AdminPanel;
+
 
