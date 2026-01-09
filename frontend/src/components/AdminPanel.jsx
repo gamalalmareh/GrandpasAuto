@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 // Get API URL from environment variable (set by Amplify)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// App.jsx / AdminPanel.jsx
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
 
 

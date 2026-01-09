@@ -5,7 +5,9 @@ import LoginModal from "./components/LoginModal.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
 import GrandpasLogo from "./assets/GrandpasLogo.png";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+// App.jsx / AdminPanel.jsx
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+
 
 function App() {
   const [cars, setCars] = useState([]);
