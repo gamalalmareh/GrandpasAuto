@@ -5,8 +5,7 @@ import LoginModal from "./components/LoginModal.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
 import GrandpasLogo from "./assets/GrandpasLogo.png";
 
-// Get API URL from environment variable (set by Amplify)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 function App() {
   const [cars, setCars] = useState([]);
@@ -16,13 +15,13 @@ function App() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [leads, setLeads] = useState([]);
 
-  // search + filters + sort
   const [searchTerm, setSearchTerm] = useState("");
   const [filterYear, setFilterYear] = useState("all");
   const [filterMake, setFilterMake] = useState("all");
   const [filterModel, setFilterModel] = useState("all");
   const [sortBy, setSortBy] = useState("none");
 
+  // load cars + leads from backend
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -46,11 +45,9 @@ function App() {
   const handleOpenDetail = (car) => setSelectedCar(car);
   const handleCloseDetail = () => setSelectedCar(null);
 
-
   const handleAdminClick = () => {
     setShowLoginModal(true);
   };
-
 
   const handleLoginSuccess = () => {
     setIsAdminLoggedIn(true);
@@ -58,16 +55,13 @@ function App() {
     setShowAdminPanel(true);
   };
 
-
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
     setShowAdminPanel(false);
   };
 
-
   const closeLoginModal = () => setShowLoginModal(false);
   const closeAdminPanel = () => setShowAdminPanel(false);
-
 
   const handleSubmitLead = async (leadData) => {
     try {
@@ -86,13 +80,11 @@ function App() {
     }
   };
 
-
-  // build filter option lists from cars
+  // filter options
   const { years, makes, models } = useMemo(() => {
     const yearSet = new Set();
     const makeSet = new Set();
     const modelSet = new Set();
-
 
     cars.forEach((car) => {
       if (car.year) yearSet.add(String(car.year));
@@ -100,14 +92,12 @@ function App() {
       if (car.model) modelSet.add(car.model);
     });
 
-
     const sortNumericDesc = (arr) =>
       arr
         .map((v) => Number(v))
         .filter((n) => !Number.isNaN(n))
         .sort((a, b) => b - a)
         .map((n) => String(n));
-
 
     return {
       years: sortNumericDesc(Array.from(yearSet)),
@@ -120,25 +110,19 @@ function App() {
     };
   }, [cars]);
 
-
+  // filtered + sorted list
   const filteredCars = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
-
 
     let list = cars.filter((car) => {
       const yearStr = String(car.year ?? "");
       const makeStr = String(car.make ?? "");
       const modelStr = String(car.model ?? "");
 
-
-      // text search
       const haystack = `${yearStr} ${makeStr} ${modelStr}`.toLowerCase();
       const searchOk = term ? haystack.includes(term) : true;
 
-
-      // dropdown filters
-      const yearOk =
-        filterYear === "all" || yearStr === String(filterYear);
+      const yearOk = filterYear === "all" || yearStr === String(filterYear);
       const makeOk =
         filterMake === "all" ||
         makeStr.toLowerCase() === String(filterMake).toLowerCase();
@@ -146,12 +130,9 @@ function App() {
         filterModel === "all" ||
         modelStr.toLowerCase() === String(filterModel).toLowerCase();
 
-
       return searchOk && yearOk && makeOk && modelOk;
     });
 
-
-    // sorting
     if (sortBy === "price-asc") {
       list = [...list].sort(
         (a, b) => Number(a.price || 0) - Number(b.price || 0)
@@ -170,10 +151,10 @@ function App() {
       );
     }
 
-
     return list;
   }, [cars, searchTerm, filterYear, filterMake, filterModel, sortBy]);
 
+  const featured = cars.length > 0 ? cars[0] : null;
 
   return (
     <div className="app-root">
@@ -193,7 +174,6 @@ function App() {
             </div>
           </div>
 
-
           <div className="header-right-block">
             <nav className="main-nav">
               <a href="#inventory">Inventory</a>
@@ -202,35 +182,26 @@ function App() {
               <a href="#lead-request">Get a callback</a>
             </nav>
 
-
             <div className="header-actions">
               <button
                 className="admin-login-btn"
                 onClick={handleAdminClick}
                 title="Admin Login"
               >
-                {isAdminLoggedIn ? (
-                  <>
-                    <span>⚙️ Admin</span>
-                    <button
-                      className="admin-logout-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAdminLogout();
-                      }}
-                    >
-                      ×
-                    </button>
-                  </>
-                ) : (
-                  "🔐 Login"
-                )}
+                {isAdminLoggedIn ? "Admin" : "Login"}
               </button>
+              {isAdminLoggedIn && (
+                <button
+                  className="admin-logout-btn"
+                  onClick={handleAdminLogout}
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
         </div>
       </header>
-
 
       <main>
         <section className="hero">
@@ -259,41 +230,40 @@ function App() {
               </div>
             </div>
 
-
-            {cars && (
+            {featured && (
               <div className="hero-card">
                 <div className="hero-card-header">
                   <span className="pill pill-live">Live inventory</span>
                   <span className="hero-card-label">Featured pick</span>
                 </div>
                 <div className="hero-card-body">
-                  {cars.imageUrl && (
+                  {featured.imageUrl && (
                     <div className="hero-card-image">
                       <img
-                        src={cars.imageUrl}
-                        alt={`${cars.make} ${cars.model}`}
+                        src={featured.imageUrl}
+                        alt={`${featured.year} ${featured.make} ${featured.model}`}
                       />
                     </div>
                   )}
                   <h2>
-                    {cars.year} {cars.make} {cars.model}
+                    {featured.year} {featured.make} {featured.model}
                   </h2>
                   <p className="hero-car-price">
-                    ${Number(cars.price || 0).toLocaleString()}
-                    {typeof cars.mileage === "number" && (
+                    ${Number(featured.price || 0).toLocaleString()}
+                    {typeof featured.mileage === "number" && (
                       <span className="hero-car-meta">
                         {" "}
-                        • {Number(cars.mileage).toLocaleString()} miles
+                        • {Number(featured.mileage).toLocaleString()} miles
                       </span>
                     )}
                   </p>
                   <p className="hero-car-location">
-                    {(cars.city || "Gloucester")},{" "}
-                    {cars.state || "VA"}
+                    {(featured.city || "Gloucester")},{" "}
+                    {featured.state || "VA"}
                   </p>
                   <button
                     className="btn-outline hero-view-btn"
-                    onClick={() => setSelectedCar(cars)}
+                    onClick={() => setSelectedCar(featured)}
                   >
                     View details
                   </button>
@@ -308,7 +278,6 @@ function App() {
           </div>
         </section>
 
-
         <section id="inventory" className="inventory-section">
           <div className="inventory-shell">
             <div className="inventory-header-row">
@@ -318,7 +287,6 @@ function App() {
                   Filter by year, make, and model, then sort by price or year.
                 </p>
               </div>
-
 
               <div className="inventory-controls">
                 <div className="inventory-search">
@@ -330,7 +298,6 @@ function App() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-
 
                 <div className="inventory-filters-row">
                   <select
@@ -346,7 +313,6 @@ function App() {
                     ))}
                   </select>
 
-
                   <select
                     className="inventory-select"
                     value={filterMake}
@@ -360,7 +326,6 @@ function App() {
                     ))}
                   </select>
 
-
                   <select
                     className="inventory-select"
                     value={filterModel}
@@ -373,7 +338,6 @@ function App() {
                       </option>
                     ))}
                   </select>
-
 
                   <select
                     className="inventory-select"
@@ -390,11 +354,9 @@ function App() {
               </div>
             </div>
 
-
             <Inventory cars={filteredCars} onOpenDetail={handleOpenDetail} />
           </div>
         </section>
-
 
         <section id="lead-request" className="lead-section">
           <div className="lead-inner">
@@ -406,7 +368,6 @@ function App() {
                 possible.
               </p>
             </div>
-
 
             <form
               className="lead-form"
@@ -428,7 +389,9 @@ function App() {
                     ?.toString(),
                 };
                 if (!lead.firstName || !lead.phone) {
-                  alert("Please include at least your name and phone number.");
+                  alert(
+                    "Please include at least your name and phone number."
+                  );
                   return;
                 }
                 await handleSubmitLead(lead);
@@ -457,7 +420,6 @@ function App() {
                 </div>
               </div>
 
-
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="phone">Phone *</label>
@@ -480,7 +442,6 @@ function App() {
                 </div>
               </div>
 
-
               <div className="form-group">
                 <label htmlFor="preferredCar">Vehicle interested in</label>
                 <input
@@ -491,10 +452,11 @@ function App() {
                 />
               </div>
 
-
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="contactPreference">Contact preference</label>
+                  <label htmlFor="contactPreference">
+                    Contact preference
+                  </label>
                   <select
                     id="contactPreference"
                     name="contactPreference"
@@ -507,7 +469,6 @@ function App() {
                 </div>
               </div>
 
-
               <div className="form-group">
                 <label htmlFor="notes">Anything else we should know?</label>
                 <textarea
@@ -517,7 +478,6 @@ function App() {
                   placeholder="Best time to call, trade-in details, budget, etc."
                 />
               </div>
-
 
               <div className="form-actions">
                 <button type="submit" className="btn-primary">
@@ -529,20 +489,19 @@ function App() {
         </section>
       </main>
 
-
       <footer className="site-footer">
         <div className="footer-inner">
           <span>© {new Date().getFullYear()} Grandpas Auto</span>
           <span className="footer-dot">•</span>
-          <span>8274 George Washington Memorial Hwy, Gloucester, VA 23061</span>
+          <span>
+            8274 George Washington Memorial Hwy, Gloucester, VA 23061
+          </span>
         </div>
       </footer>
-
 
       {selectedCar && (
         <VehicleDetailModal car={selectedCar} onClose={handleCloseDetail} />
       )}
-
 
       {showLoginModal && (
         <LoginModal
@@ -550,7 +509,6 @@ function App() {
           onLoginSuccess={handleLoginSuccess}
         />
       )}
-
 
       {showAdminPanel && isAdminLoggedIn && (
         <AdminPanel
@@ -566,7 +524,4 @@ function App() {
   );
 }
 
-
 export default App;
-
-
