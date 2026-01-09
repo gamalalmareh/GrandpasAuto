@@ -7,9 +7,6 @@ frontend:
       commands:
         - cd frontend
         - npm install
-        - cd server
-        - npm install 
-        - cd ..
         - npm run build
   artifacts:
     baseDirectory: frontend/dist
