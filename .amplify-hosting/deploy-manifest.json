@@ -1,32 +1,31 @@
 {
   "version": 1,
-  "framework": "custom",
   "routes": [
     {
       "path": "/api/*",
-      "target": "compute",
-      "status": 200,
-      "kind": "Compute",
-      "name": "default"
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
     },
     {
       "path": "/uploads/*",
-      "target": "compute",
-      "status": 200,
-      "kind": "Compute",
-      "name": "default"
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
     },
     {
       "path": "/assets/*",
-      "target": "static",
-      "status": 200,
-      "kind": "Static"
+      "target": {
+        "kind": "Static"
+      }
     },
     {
       "path": "/*",
-      "target": "static",
-      "status": 200,
-      "kind": "Static"
+      "target": {
+        "kind": "Static"
+      }
     }
   ],
   "computeResources": [

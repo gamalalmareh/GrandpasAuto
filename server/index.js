@@ -31,17 +31,17 @@ const storage = multer.diskStorage({
     const uniqueName =
       Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
     cb(null, uniqueName);
-  },
+  }
 });
 
 const upload = multer({ storage });
 
-// Health check (simple root)
+// Health check
 app.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
-// Base path for API (for Amplify, use /api/*)
+// Base path for API
 const API_BASE = "/api";
 
 // ---- Image upload: single featured ----
@@ -55,14 +55,18 @@ app.post(`${API_BASE}/upload`, upload.single("image"), (req, res) => {
 });
 
 // ---- Image upload: multiple gallery images ----
-app.post(`${API_BASE}/upload-multiple`, upload.array("images", 20), (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({ error: "No files uploaded" });
+app.post(
+  `${API_BASE}/upload-multiple`,
+  upload.array("images", 20),
+  (req, res) => {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const imageUrls = req.files.map((f) => `${baseUrl}/uploads/${f.filename}`);
+    res.json({ imageUrls });
   }
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
-  const imageUrls = req.files.map((f) => `${baseUrl}/uploads/${f.filename}`);
-  res.json({ imageUrls });
-});
+);
 
 // ---- Cars: get all ----
 app.get(`${API_BASE}/cars`, (req, res) => {
@@ -79,7 +83,7 @@ app.get(`${API_BASE}/cars`, (req, res) => {
 
     const cars = rows.map((row) => ({
       ...row,
-      images: row.galleryImages ? row.galleryImages.split(",") : [],
+      images: row.galleryImages ? row.galleryImages.split(",") : []
     }));
     res.json(cars);
   });
@@ -100,7 +104,7 @@ app.post(`${API_BASE}/cars`, (req, res) => {
     state,
     imageUrl,
     images = [],
-    description,
+    description
   } = req.body;
 
   const sql = `
@@ -120,7 +124,7 @@ app.post(`${API_BASE}/cars`, (req, res) => {
     city,
     state,
     imageUrl,
-    description,
+    description
   ];
 
   db.run(sql, params, function (err) {
@@ -158,7 +162,7 @@ app.put(`${API_BASE}/cars/:id`, (req, res) => {
     state,
     imageUrl,
     images = [],
-    description,
+    description
   } = req.body;
 
   const sql = `
@@ -181,7 +185,7 @@ app.put(`${API_BASE}/cars/:id`, (req, res) => {
     state,
     imageUrl,
     description,
-    carId,
+    carId
   ];
 
   db.run(sql, params, function (err) {
@@ -210,7 +214,7 @@ app.put(`${API_BASE}/cars/:id`, (req, res) => {
           if (err3) return res.status(500).json({ error: err3.message });
           const updated = {
             ...row,
-            images: row.galleryImages ? row.galleryImages.split(",") : [],
+            images: row.galleryImages ? row.galleryImages.split(",") : []
           };
           res.json(updated);
         }
@@ -246,12 +250,12 @@ app.patch(`${API_BASE}/leads/:id`, (req, res) => {
   );
 });
 
-// Local dev: start server if run directly
+// Local dev
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
   });
 }
 
-// Export app for Amplify compute
+// Export for Amplify compute
 module.exports = app;
