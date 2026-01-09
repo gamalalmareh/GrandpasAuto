@@ -3,12 +3,11 @@ const path = require("path");
 
 const rootDir = process.cwd();
 const amplifyDir = path.join(rootDir, ".amplify-hosting");
-const computeDir = path.join(amplifyDir, "compute", "default");
 const staticDir = path.join(amplifyDir, "static");
+const serverOutDir = path.join(amplifyDir, "server");
 const serverDir = path.join(rootDir, "server");
 const distDir = path.join(rootDir, "dist");
 
-// Simple recursive copy
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) return;
   if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
@@ -23,41 +22,32 @@ function copyDir(src, dest) {
   }
 }
 
-// 1) Clean previous .amplify-hosting
+// 1) Clean previous
 fs.rmSync(amplifyDir, { recursive: true, force: true });
 
-// 2) Recreate structure
-fs.mkdirSync(computeDir, { recursive: true });
+// 2) Recreate dirs
 fs.mkdirSync(staticDir, { recursive: true });
+fs.mkdirSync(serverOutDir, { recursive: true });
 
-// 3) Recreate deploy-manifest.json
+// 3) Write deploy-manifest.json
 const manifest = {
   version: 1,
-  routes: [
-    {
-      path: "/api/*",
-      target: { kind: "Compute", src: "default" }
-    },
-    {
-      path: "/uploads/*",
-      target: { kind: "Compute", src: "default" }
-    },
-    {
-      path: "/assets/*",
-      target: { kind: "Static" }
-    },
-    {
-      path: "/*",
-      target: { kind: "Static" }
-    }
-  ],
-  computeResources: [
-    {
-      name: "default",
-      runtime: "nodejs20.x",
-      entrypoint: "index.js"
-    }
-  ]
+  serverSideRendering: {
+    runtime: "nodejs20.x",
+    computeType: "lambda",
+    entry: "server/index.js",
+    routes: [
+      { path: "/api/*" },
+      { path: "/uploads/*" }
+    ]
+  },
+  staticAssets: {
+    baseDirectory: "static",
+    routes: [
+      { path: "/assets/*" },
+      { path: "/*" }
+    ]
+  }
 };
 
 fs.writeFileSync(
@@ -66,18 +56,18 @@ fs.writeFileSync(
   "utf8"
 );
 
-// 4) Copy frontend build to static
+// 4) Copy frontend build into static/
 copyDir(distDir, staticDir);
 
-// 5) Copy backend core files into compute/default
+// 5) Copy backend into server/ (matching entry: server/index.js)
 ["index.js", "db.js", "database.sqlite"].forEach((file) => {
   const src = path.join(serverDir, file);
   if (fs.existsSync(src)) {
-    fs.copyFileSync(src, path.join(computeDir, file));
+    fs.copyFileSync(src, path.join(serverOutDir, file));
   }
 });
 
-// 6) Copy backend node_modules into compute/default/node_modules
+// 6) Copy backend node_modules into server/node_modules
 const serverNodeModules = path.join(serverDir, "node_modules");
-const computeNodeModules = path.join(computeDir, "node_modules");
+const computeNodeModules = path.join(serverOutDir, "node_modules");
 copyDir(serverNodeModules, computeNodeModules);
