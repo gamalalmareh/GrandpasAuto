@@ -1,18 +1,5 @@
 {
   "version": 1,
-  "serverSideRendering": {
-    "runtime": "nodejs20.x",
-    "computeType": "lambda",
-    "entry": "server/index.js",
-    "routes": [
-      {
-        "path": "/api/*"
-      },
-      {
-        "path": "/uploads/*"
-      }
-    ]
-  },
   "staticAssets": {
     "baseDirectory": "static",
     "routes": [
