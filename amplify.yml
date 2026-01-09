@@ -3,13 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
+    build:
+      commands:
         - cd frontend
         - npm install
         - cd server
         - npm install 
-    build:
-      commands:
-        - cd frontend
+        - cd ..
         - npm run build
   artifacts:
     baseDirectory: frontend/.amplify-hosting
