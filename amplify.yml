@@ -5,6 +5,9 @@ frontend:
       commands:
         - cd frontend
         - npm install
+        - cd ..
+        - cd server
+        - npm install 
     build:
       commands:
         - cd frontend
