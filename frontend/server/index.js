@@ -250,12 +250,7 @@ app.patch(`${API_BASE}/leads/:id`, (req, res) => {
   );
 });
 
-// Local dev
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
-  });
-}
-
-// Export for Amplify compute
-module.exports = app;
+// Start server (local / ngrok)
+app.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});
