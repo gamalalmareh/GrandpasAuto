@@ -2,16 +2,14 @@
   "name": "grandpas-auto-frontend",
   "version": "1.0.0",
   "description": "Frontend for Grandpas Auto dealership",
+  "private": true,
   "type": "module",
-
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "postbuild": "node scripts/amplify-postbuild.cjs"
-},
-
-
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "postbuild": "node scripts/amplify-postbuild.cjs"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
