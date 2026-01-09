@@ -45,4 +45,4 @@ fs.writeFileSync(
 );
 
 // 4) Copy frontend build into static/
-copyDir(distDir, st
+copyDir(distDir, staticDir);
