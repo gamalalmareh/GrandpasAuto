@@ -1,38 +1,27 @@
 {
   "version": 1,
-  "routes": [
-    {
-      "path": "/api/*",
-      "target": {
-        "kind": "Compute",
-        "src": "default"
+  "serverSideRendering": {
+    "computeType": "lambda",
+    "runtime": "nodejs20.x",
+    "entry": "index.js",
+    "routes": [
+      {
+        "path": "/api/*"
+      },
+      {
+        "path": "/uploads/*"
       }
-    },
-    {
-      "path": "/uploads/*",
-      "target": {
-        "kind": "Compute",
-        "src": "default"
+    ]
+  },
+  "staticAssets": {
+    "baseDirectory": "static",
+    "routes": [
+      {
+        "path": "/assets/*"
+      },
+      {
+        "path": "/*"
       }
-    },
-    {
-      "path": "/assets/*",
-      "target": {
-        "kind": "Static"
-      }
-    },
-    {
-      "path": "/*",
-      "target": {
-        "kind": "Static"
-      }
-    }
-  ],
-  "computeResources": [
-    {
-      "name": "default",
-      "runtime": "nodejs20.x",
-      "entrypoint": "index.js"
-    }
-  ]
+    ]
+  }
 }
