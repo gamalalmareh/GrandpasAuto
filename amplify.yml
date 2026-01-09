@@ -12,7 +12,7 @@ frontend:
         - cd ..
         - npm run build
   artifacts:
-    baseDirectory: frontend/.amplify-hosting
+    baseDirectory: frontend/dist
     files:
       - '**/*'
   cache:

@@ -20,9 +20,13 @@ function copyDir(src, dest) {
   }
 }
 
+// 1) Clean previous .amplify-hosting
 fs.rmSync(amplifyDir, { recursive: true, force: true });
+
+// 2) Recreate static directory
 fs.mkdirSync(staticDir, { recursive: true });
 
+// 3) Write minimal deploy-manifest.json for static hosting
 const manifest = {
   version: 1,
   staticAssets: {
@@ -40,4 +44,5 @@ fs.writeFileSync(
   "utf8"
 );
 
-copyDir(distDir, staticDir);
+// 4) Copy frontend build into static/
+copyDir(distDir, st
