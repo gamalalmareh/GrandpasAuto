@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "path": "/api/*",
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
+    },
+    {
+      "path": "/uploads/*",
+      "target": {
+        "kind": "Compute",
+        "src": "default"
+      }
+    },
+    {
+      "path": "/assets/*",
+      "target": {
+        "kind": "Static"
+      }
+    },
+    {
+      "path": "/*",
+      "target": {
+        "kind": "Static"
+      }
+    }
+  ],
+  "computeResources": [
+    {
+      "name": "default",
+      "runtime": "nodejs20.x",
+      "entrypoint": "index.js"
+    }
+  ]
+}

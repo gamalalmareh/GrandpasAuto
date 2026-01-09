@@ -1,5 +1,4 @@
 version: 1
-
 frontend:
   phases:
     preBuild:
@@ -8,19 +7,12 @@ frontend:
         - npm ci
     build:
       commands:
+        - cd frontend
         - npm run build
-      env:
-        VITE_API_BASE_URL: 'http://54.90.68.158:5000'
   artifacts:
-    baseDirectory: frontend/dist
+    baseDirectory: frontend/.amplify-hosting
     files:
       - '**/*'
   cache:
     paths:
       - frontend/node_modules/**/*
-
-backend:
-  phases:
-    build:
-      commands:
-        - echo "Backend build skipped"
