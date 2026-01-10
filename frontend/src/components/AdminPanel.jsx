@@ -70,8 +70,8 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
     try {
       const method = editingCar ? "PUT" : "POST";
       const url = editingCar
-        ? `${API_BASE}cars/${editingCar}`
-        : `${API_BASE}cars`;
+        ? `${API_BASE}api/cars/${editingCar}`
+        : `${API_BASE}api/cars`;
 
       const dataToSave = {
         ...formData,
@@ -104,7 +104,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
   const handleDeleteCar = async (carId) => {
     if (!window.confirm("Really delete this car?")) return;
     try {
-      const res = await fetch(`${API_BASE}cars/${carId}`, {
+      const res = await fetch(`${API_BASE}api/cars/${carId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Delete failed");
