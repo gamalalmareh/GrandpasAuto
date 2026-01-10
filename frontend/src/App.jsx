@@ -29,8 +29,8 @@ function App() {
     const loadData = async () => {
       try {
         const [carsRes, leadsRes] = await Promise.all([
-          fetch(`${API_BASE}/cars`),
-          fetch(`${API_BASE}/leads`),
+          fetch(`${API_BASE}/carsRouter`),
+          fetch(`${API_BASE}/leadsRouter`),
         ]);
         const [carsData, leadsData] = await Promise.all([
           carsRes.json(),
@@ -68,7 +68,7 @@ function App() {
 
   const handleSubmitLead = async (leadData) => {
     try {
-      const res = await fetch(`${API_BASE}/leads`, {
+      const res = await fetch(`${API_BASE}api/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(leadData),
