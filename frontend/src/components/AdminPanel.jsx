@@ -158,7 +158,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
     });
 
     try {
-      const res = await fetch(`${API_BASE}upload-multiple`, {
+      const res = await fetch(`${API_BASE}api/upload-multiple`, {
         method: "POST",
         body: uploadFormData,
       });
@@ -190,7 +190,7 @@ function AdminPanel({ onClose, onLogout, cars, setCars, leads, setLeads }) {
 
   const handleUpdateLeadStatus = async (leadId, status) => {
     try {
-      const res = await fetch(`${API_BASE}leads/${leadId}`, {
+      const res = await fetch(`${API_BASE}api/leads/${leadId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
