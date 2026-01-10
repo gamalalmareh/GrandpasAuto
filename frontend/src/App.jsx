@@ -29,8 +29,8 @@ function App() {
     const loadData = async () => {
       try {
         const [carsRes, leadsRes] = await Promise.all([
-          fetch(`${API_BASE}api/cars`),
-          fetch(`${API_BASE}api/leads`),
+          fetch(`${API_BASE}/cars`),
+          fetch(`${API_BASE}/leads`),
         ]);
         const [carsData, leadsData] = await Promise.all([
           carsRes.json(),
