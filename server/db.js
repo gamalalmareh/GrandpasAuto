@@ -1,7 +1,14 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
+const fs = require("fs");
 
-const dbPath = path.join(__dirname, "database.sqlite");
+// Put DB in a dedicated /data folder at project root
+const dbDir = path.join(__dirname, "..", "data");
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const dbPath = path.join(dbDir, "database.sqlite");
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -10,6 +17,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.log("Connected to SQLite database at", dbPath);
   }
 });
+
+// Ensure foreign keys work (for car_images cascades)
+db.run("PRAGMA foreign_keys = ON");
 
 // Create tables if they don't exist
 db.serialize(() => {

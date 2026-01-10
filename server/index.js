@@ -37,8 +37,9 @@ const API_BASE = "/api";
 
 // Mount route modules under /api
 app.use(API_BASE, uploadRouter);
-app.use(API_BASE, carsRouter);
-app.use(API_BASE, leadsRouter);
+app.use("/api", carsRouter);
+app.use("/api", leadsRouter);
+
 
 // Start server (local / ngrok)
 app.listen(PORT, () => {
