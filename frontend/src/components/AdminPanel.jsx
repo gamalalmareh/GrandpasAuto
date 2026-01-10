@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const API_BASE = "https://defenceable-hugo-exultantly.ngrok-free.dev/";
 
-const UPLOAD_ENDPOINT = `${API_BASE}/upload`;
+const UPLOAD_ENDPOINT = `${API_BASE}/api/upload`;
 
 
 
