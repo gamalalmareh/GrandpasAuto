@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE = "https://defenceable-hugo-exultantly.ngrok-free.dev/";
 
 function AdminLogin({ onLogin, onClose }) {
   const [username, setUsername] = useState("");
