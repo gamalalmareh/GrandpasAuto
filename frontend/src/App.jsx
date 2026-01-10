@@ -5,8 +5,9 @@ import LoginModal from "./components/LoginModal.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
 import GrandpasLogo from "./assets/GrandpasLogo.png";
 
-// App.jsx / AdminPanel.jsx
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+// App.jsx
+const API_BASE =
+  "https://defenceable-hugo-exultantly.ngrok-free.dev/api";
 
 
 function App() {
