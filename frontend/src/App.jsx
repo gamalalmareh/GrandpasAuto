@@ -7,7 +7,6 @@ import GrandpasLogo from "./assets/GrandpasLogo.png";
 
 // App.jsx
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ||
   "https://defenceable-hugo-exultantly.ngrok-free.dev/api";
 
 function App() {
@@ -29,8 +28,8 @@ function App() {
     const loadData = async () => {
       try {
         const [carsRes, leadsRes] = await Promise.all([
-          fetch(`${API_BASE}/carsRouter`),
-          fetch(`${API_BASE}/leadsRouter`),
+          fetch(`${API_BASE}/cars`),
+          fetch(`${API_BASE}/leads`),
         ]);
         const [carsData, leadsData] = await Promise.all([
           carsRes.json(),
