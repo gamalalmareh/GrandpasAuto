@@ -67,7 +67,7 @@ function App() {
 
   const handleSubmitLead = async (leadData) => {
     try {
-      const res = await fetch(`${API_BASE}leads`, {
+      const res = await fetch(`${API_BASE}/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(leadData),
